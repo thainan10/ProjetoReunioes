@@ -1,0 +1,12 @@
+package br.ufpb.dce.Reunioes;
+
+public class ReuniaoInexistenteException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ReuniaoInexistenteException(String msg){
+		super(msg);
+	}
+}

@@ -13,24 +13,21 @@ public class ControleDoSistema  {
 	}
 	
 	public void criarUsuario(String login ,String senha, String conf,String nome )throws Exception{
-		login=login.replaceAll(" ","");
-		senha=senha.replaceAll(" ","");
-		conf=conf.replaceAll(" ","");
 		
-		if(senha.equalsIgnoreCase(conf)){
+		if(senha.equals(conf)){
 			for(Usuario u: users){
-				if(u.getLogin().equalsIgnoreCase(login)){
-					throw new Exception("Ja Existe Esse Login No Sistema, Utilize Outro!");
+				if(u.getLogin().equals(login)){
+					throw new LoguinExistenteException("Ja Existe Esse Login No Sistema. Utilize Outro!");
 				}
 			}
-			if(login.equalsIgnoreCase("")||senha.equalsIgnoreCase("")||nome.equalsIgnoreCase("")|| conf.equalsIgnoreCase("")||login.equalsIgnoreCase("")){
-				throw new Exception("Campo Em Branco Não é Permetido, Utilize caracters!");
+			if(login.equals("")||senha.equals("")||nome.equals("")|| conf.equals("")||login.equals("")){
+				throw new CampoEmBrancoException("Campo Em Branco Não é Permetido. Utilize caracteres!");
 			}
 			Usuario user = new Usuario (login, senha, nome);
 			users.add(user);
 		}
 		else{
-			throw new Exception("Senhas Não Conferem,Informe Duas senhas iguais!");
+			throw new SenhasDiferentesException("Senhas Não Conferem. Informe Duas senhas iguais!");
 		}
 	}
 		
@@ -38,16 +35,16 @@ public class ControleDoSistema  {
 		Usuario retorno = null;
 		boolean resultado = false;
 		for(Usuario u : users){
-			if(u.getLogin().equalsIgnoreCase(login)&& u.getSenha().equalsIgnoreCase(senha)){
+			if(u.getLogin().equals(login)&& u.getSenha().equals(senha)){
 				resultado= true;
 				retorno =u;
 			}
 		}
-		if(login.equalsIgnoreCase("")||senha.equalsIgnoreCase("")){
-			throw new Exception("Espaço Em Branco Não é valido, Utilize caracters!");
+		if(login.equals("")||senha.equals("")){
+			throw new CampoEmBrancoException("Espaço Em Branco Não é valido. Utilize caracters!");
 		}
 		if(resultado == false){
-			throw new Exception("Usuario Ou Senha Errados, Tente Novamente!");
+			throw new DadosInexistentesException("Usuario Ou Senha Errados. Tente Novamente!");
 		}
 		return retorno;
 	}
@@ -60,7 +57,7 @@ public class ControleDoSistema  {
 		List<Reuniao> list = u.getReunioes();
 		for (Reuniao r: list){
 			if(r.getTitulo().equalsIgnoreCase(titulo)){
-				throw new Exception("Você Ja Possui Uma Reuniao Com Esse Titulo, Informe Um Titulo Diferente.");
+				throw new TituloJaExistenteException("Você Ja Possui Uma Reuniao Com Esse Titulo. Informe Um Titulo Diferente.");
 			}
 		}
 		Reuniao r = new Reuniao(u, titulo);
@@ -70,12 +67,12 @@ public class ControleDoSistema  {
 	public void addAmigo(int id ,Usuario user)throws Exception{
 		List<Usuario> list=user.getAmigos();
 		if(id==user.getID()){
-			throw new Exception("Você Não Pode Adicionar Você Mesmo!");
+			throw new AutoAdicionarException("Você Não Pode Adicionar Você Mesmo!");
 		}
 		
 		for(Usuario u:list){
 			if(u.getID()==id){
-				throw new Exception("Você Ja Possui Esse Amigo.");
+				throw new AmigoJaExistenteException("Você Ja Possui Esse Amigo.");
 			}
 		}
 		boolean teste= false;
@@ -83,7 +80,7 @@ public class ControleDoSistema  {
 			if(u2.getID()==id){
 				for(Convites convitesDeU2 : u2.getConvites()){
 					if(user.getID()==convitesDeU2.getID()){
-						throw new Exception("Você Não Pode Convidar Denovo,Tenha Paciência E Aguarde A Confirmação.");
+						throw new AmigoJaConvidadoException("Você Não Pode Convidar Novamente. Tenha Paciência E Aguarde A Confirmação.");
 					}
 				}
 				u2.addAmigo(user);
@@ -92,7 +89,7 @@ public class ControleDoSistema  {
 			}
 		}
 		if(teste==false){
-			throw new Exception ("Usuario Não Encotrado.");
+			throw new UsuarioInexistenteException("Usuario Não Encotrado.");
 		}
 	}
 	
@@ -168,7 +165,7 @@ public class ControleDoSistema  {
 			}
 		}
 		if(lista == null){
-			throw new Exception("Não há reuniões!");
+			throw new AusenciaDeReunioesException("Não há reuniões!");
 		}
 		return lista;
 	}
@@ -181,7 +178,7 @@ public class ControleDoSistema  {
 			}
 		}
 		if(reunioes == null){
-			throw new Exception("Não há reuniões!");
+			throw new AusenciaDeReunioesException("Não há reuniões!");
 		}else{
 			for(Reuniao r : reunioes){
 				if(idReuniao == r.getId()){
@@ -189,7 +186,7 @@ public class ControleDoSistema  {
 				}
 			}
 		}
-		throw new Exception("Não existe reunião com esse ID.");
+		throw new ReuniaoInexistenteException("Não existe reunião com esse ID.");
 	}
 	
 	public Assuntos getAssunto(int idAssunto, int idReuniao, int idUsuario) throws Exception{
@@ -198,7 +195,7 @@ public class ControleDoSistema  {
 		boolean teste=false;
 		Assuntos retorno =null;
 		if(pauta == null){
-			throw new Exception("Não existem assuntos nessa reunião!");
+			throw new AusenciaDeAssuntosException("Não existem assuntos nessa reunião!");
 		}else{
 			for(Assuntos a : pauta){
 				if(a.getID()== idAssunto){
@@ -208,7 +205,7 @@ public class ControleDoSistema  {
 			}
 		}
 		if(teste == false){
-			throw new Exception("Não há assunto com esse ID.");
+			throw new AssuntoInexistenteException("Não há assunto com esse ID.");
 		}
 		return retorno;
 	}
@@ -216,7 +213,7 @@ public class ControleDoSistema  {
 	public Usuario getUsuario(int idUsuario)throws Exception{
 		List<Usuario> usuarios = this.getUsuarios();
 		if(usuarios == null){
-			throw new Exception("Não existe usuários cadastrados");
+			throw new AusenciaDeUsuariosException("Não existem usuários cadastrados");
 		}else{
 			for(Usuario u : usuarios){
 				if(u.getID() == idUsuario){
@@ -224,7 +221,7 @@ public class ControleDoSistema  {
 				}
 			}
 		}
-		throw new Exception("Não existe usuário com esse ID.");
+		throw new UsuarioInexistenteException("Não existe usuário com esse ID.");
 	}
 	
 	public void cadastrarUsuarioNaReuniao(int idUsuario, int idReuniao, int idModerador){

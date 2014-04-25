@@ -1,0 +1,12 @@
+package br.ufpb.dce.Reunioes;
+
+public class AmigoJaConvidadoException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public AmigoJaConvidadoException(String msg){
+		super(msg);
+	}
+}

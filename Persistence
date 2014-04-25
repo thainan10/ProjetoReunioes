@@ -1,0 +1,59 @@
+package br.ufpb.dce.Reunioes;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+
+
+public class Persistence {
+	
+	
+	public void gravarUsuarioEmArquivo(String nomeArquivo, List<Usuario> list) throws IOException{
+		BufferedWriter gravador = null;
+		try {
+			gravador = new BufferedWriter(new FileWriter(nomeArquivo));
+			for (Usuario u: list){
+				gravador.write(u.getLogin()+"\n");
+				gravador.write(u.getSenha()+"\n");
+				gravador.write(u.getNome()+"\n");
+				gravador.write(u.getID()+"\n");
+			}
+		} finally {
+			if (gravador!=null){
+				gravador.close();
+			}
+		}
+	}
+	
+	public void carregarUsuarioDeArquivo(String nomeArquivo, ControleDoSistema controle) throws Exception {
+		BufferedReader leitor = null;
+		try {
+			leitor = new BufferedReader(new FileReader(nomeArquivo));
+			String loginUsuario = null;
+			int cont=0;
+			do {
+				loginUsuario = leitor.readLine();
+				if (loginUsuario != null){
+					String senhaUsuario = leitor.readLine();
+					String nomeUsuario=leitor.readLine();
+					controle.criarUsuario(loginUsuario, senhaUsuario, senhaUsuario, nomeUsuario);
+					String x=leitor.readLine();
+					int p =Integer.parseInt(x);
+					controle.getUsers().get(cont).setNumeroID(p);
+					cont++;
+				}
+			} while(loginUsuario != null); 
+		} finally {
+			if (leitor!=null){
+				leitor.close();
+			}
+		}
+	}
+	
+	
+	
+	
+}

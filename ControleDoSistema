@@ -1,0 +1,242 @@
+package br.ufpb.dce.Reunioes;
+
+
+
+import java.util.List;
+import java.util.LinkedList;
+
+public class ControleDoSistema  {
+	public List <Usuario> users= new LinkedList<Usuario>();
+	
+	public List<Usuario> getUsers(){
+		return this.users;
+	}
+	
+	public void criarUsuario(String login ,String senha, String conf,String nome )throws Exception{
+		login=login.replaceAll(" ","");
+		senha=senha.replaceAll(" ","");
+		conf=conf.replaceAll(" ","");
+		
+		if(senha.equalsIgnoreCase(conf)){
+			for(Usuario u: users){
+				if(u.getLogin().equalsIgnoreCase(login)){
+					throw new Exception("Ja Existe Esse Login No Sistema, Utilize Outro!");
+				}
+			}
+			if(login.equalsIgnoreCase("")||senha.equalsIgnoreCase("")||nome.equalsIgnoreCase("")|| conf.equalsIgnoreCase("")||login.equalsIgnoreCase("")){
+				throw new Exception("Campo Em Branco Não é Permetido, Utilize caracters!");
+			}
+			Usuario user = new Usuario (login, senha, nome);
+			users.add(user);
+		}
+		else{
+			throw new Exception("Senhas Não Conferem,Informe Duas senhas iguais!");
+		}
+	}
+		
+	public Usuario loginUsuario(String login, String senha)throws Exception{
+		Usuario retorno = null;
+		boolean resultado = false;
+		for(Usuario u : users){
+			if(u.getLogin().equalsIgnoreCase(login)&& u.getSenha().equalsIgnoreCase(senha)){
+				resultado= true;
+				retorno =u;
+			}
+		}
+		if(login.equalsIgnoreCase("")||senha.equalsIgnoreCase("")){
+			throw new Exception("Espaço Em Branco Não é valido, Utilize caracters!");
+		}
+		if(resultado == false){
+			throw new Exception("Usuario Ou Senha Errados, Tente Novamente!");
+		}
+		return retorno;
+	}
+	
+	public List<Usuario> getUsuarios(){
+		return this.users;
+	}
+	
+	public Reuniao criarReuniao(Usuario u, String titulo )throws Exception{
+		List<Reuniao> list = u.getReunioes();
+		for (Reuniao r: list){
+			if(r.getTitulo().equalsIgnoreCase(titulo)){
+				throw new Exception("Você Ja Possui Uma Reuniao Com Esse Titulo, Informe Um Titulo Diferente.");
+			}
+		}
+		Reuniao r = new Reuniao(u, titulo);
+		u.setReuniao(r);
+		return r;
+	}
+	public void addAmigo(int id ,Usuario user)throws Exception{
+		List<Usuario> list=user.getAmigos();
+		if(id==user.getID()){
+			throw new Exception("Você Não Pode Adicionar Você Mesmo!");
+		}
+		
+		for(Usuario u:list){
+			if(u.getID()==id){
+				throw new Exception("Você Ja Possui Esse Amigo.");
+			}
+		}
+		boolean teste= false;
+		for(Usuario u2 : this.users){
+			if(u2.getID()==id){
+				for(Convites convitesDeU2 : u2.getConvites()){
+					if(user.getID()==convitesDeU2.getID()){
+						throw new Exception("Você Não Pode Convidar Denovo,Tenha Paciência E Aguarde A Confirmação.");
+					}
+				}
+				u2.addAmigo(user);
+				user.addAmigo(u2);
+				teste=true;
+			}
+		}
+		if(teste==false){
+			throw new Exception ("Usuario Não Encotrado.");
+		}
+	}
+	
+	public List<Usuario> getAmigos(Usuario user)throws Exception{
+		List<Usuario> list=null;
+		for(Usuario u :this.users){
+			if(u.getID()==user.getID()){
+				list=u.getAmigos();
+			}
+		}
+		
+			return list;
+	}
+	
+	public String retornaUsuarioListEmString(List<Usuario> u){
+		String txt ="\n";
+		for(Usuario user : u){
+			txt=txt+user.getNome();
+		}
+		return txt;
+	}
+	public List<Convites> getConvites(Usuario user)throws Exception{
+		List<Convites> list=user.getConvites();
+		for(Usuario u :this.users){
+			if(u.getID()==user.getID()){
+				list=u.getConvites();
+			}
+		}
+		return list;
+	}
+
+	public String retornaConvitesListEmString(List<Convites> convites) {
+		String txt ="\n ";
+		String txt2 ="\n ";
+		for(Convites c: convites){
+			if(c.getTipo().equalsIgnoreCase("Reuniao")){
+				txt=txt+" 	"+c.getNome().toUpperCase()+"Titulo:"+" Sua ID é:"+c.getID();
+			}
+				
+			else if(c.getTipo().equalsIgnoreCase("Usuario")){
+				txt2=txt2+"	  "+c.getNome().toUpperCase()+" Sua ID é:"+c.getID();
+			}
+		}
+		txt="\n\nConvites Para Reuniões :"+txt;
+		txt2="\nConvites De Amizades :"+txt2;
+		return txt+txt2;
+	}
+	
+	public ItemComentado addComentario(Assuntos assunto, Usuario user, String txt){
+		return assunto.addComentario(user, txt);
+	}
+	
+	public ItemComentado addResposta (Usuario user,ItemComentado comentario,String txt){
+		return comentario.addResposta(user, txt);
+	}
+	public Assuntos addAssuntos(Reuniao r ,String titulo, String descricao){
+		Assuntos assunto = new Assuntos(titulo, descricao);
+		r.addAssuntos(assunto);
+		return assunto;
+	}
+	public void listarPauta(Reuniao reuniao){
+		reuniao.listarPauta();
+	}
+	
+	public List<ItemComentado> listarComentario(Assuntos assunto){
+		return assunto.getComentarios();
+	}
+	public List<Reuniao> getReunioes(Usuario u)throws Exception{
+		List <Reuniao> lista=null;
+		for(Usuario u1: this.users){
+			if(u1.getID()==u.getID()){
+				 lista=u1.getReunioes();
+			}
+		}
+		if(lista == null){
+			throw new Exception("Não há reuniões!");
+		}
+		return lista;
+	}
+	
+	public Reuniao getReuniao(int idReuniao,int idUsuario) throws Exception{
+		List<Reuniao> reunioes = new LinkedList<Reuniao>();
+		for(Usuario u : this.users ){
+			if(u.getID()==idUsuario){
+				reunioes = u.getReunioes();
+			}
+		}
+		if(reunioes == null){
+			throw new Exception("Não há reuniões!");
+		}else{
+			for(Reuniao r : reunioes){
+				if(idReuniao == r.getId()){
+					return r;
+				}
+			}
+		}
+		throw new Exception("Não existe reunião com esse ID.");
+	}
+	
+	public Assuntos getAssunto(int idAssunto, int idReuniao, int idUsuario) throws Exception{
+		Reuniao reuniao = this.getReuniao(idReuniao, idUsuario);
+		List<Assuntos> pauta = reuniao.getPauta();
+		boolean teste=false;
+		Assuntos retorno =null;
+		if(pauta == null){
+			throw new Exception("Não existem assuntos nessa reunião!");
+		}else{
+			for(Assuntos a : pauta){
+				if(a.getID()== idAssunto){
+					teste=true;
+					retorno=a;
+				}
+			}
+		}
+		if(teste == false){
+			throw new Exception("Não há assunto com esse ID.");
+		}
+		return retorno;
+	}
+	
+	public Usuario getUsuario(int idUsuario)throws Exception{
+		List<Usuario> usuarios = this.getUsuarios();
+		if(usuarios == null){
+			throw new Exception("Não existe usuários cadastrados");
+		}else{
+			for(Usuario u : usuarios){
+				if(u.getID() == idUsuario){
+					return u;
+				}
+			}
+		}
+		throw new Exception("Não existe usuário com esse ID.");
+	}
+	
+	public void cadastrarUsuarioNaReuniao(int idUsuario, int idReuniao, int idModerador){
+		try{
+			Usuario user = this.getUsuario(idUsuario);
+			Reuniao r = this.getReuniao(idReuniao, idModerador);
+			r.setParticipantes(user);
+		}catch(Exception e){
+			
+		}
+	}
+	public List<Usuario> participantes(Reuniao r){
+		return r.getParticipantes();
+	}
+}

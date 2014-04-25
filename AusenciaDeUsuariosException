@@ -1,0 +1,12 @@
+package br.ufpb.dce.Reunioes;
+
+public class AusenciaDeUsuariosException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public AusenciaDeUsuariosException(String msg){
+		super(msg);
+	}
+}

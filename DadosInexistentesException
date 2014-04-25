@@ -1,0 +1,12 @@
+package br.ufpb.dce.Reunioes;
+
+public class DadosInexistentesException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public DadosInexistentesException(String msg){
+		super(msg);
+	}
+}

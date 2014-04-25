@@ -1,0 +1,12 @@
+package br.ufpb.dce.Reunioes;
+
+public class AutoAdicionarException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public AutoAdicionarException(String msg){
+		super(msg);
+	}
+}
